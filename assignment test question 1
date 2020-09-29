@@ -1,0 +1,103 @@
+#include <bits/stdc++.h> 
+#include<fstream>
+#include<vector>
+#include<string.h>
+#include<sstream>
+
+using namespace std; 
+  
+const int l = 26; 
+
+struct ThreeNode 
+{ 
+    struct ThreeNode *children[l]; 
+  
+    bool isEndOfWord;
+    int number; 
+}; 
+
+struct ThreeNode *getNode(void) 
+{ 
+    struct ThreeNode *pNode =  new ThreeNode; 
+  
+    pNode->isEndOfWord = false;
+    pNode->number=0; 
+  
+    for (int i = 0; i < l; i++) 
+        pNode->children[i] = NULL; 
+  
+    return pNode; 
+} 
+  
+void insert(struct ThreeNode *root, string key,int num) 
+{ 
+    struct ThreeNode *pCrawl = root; 
+  
+    for (int i = 0; i < key.length(); i++) 
+    { 
+        int index = key[i] - 'a'; 
+        if (!pCrawl->children[index]) 
+            pCrawl->children[index] = getNode(); 
+  
+        pCrawl = pCrawl->children[index]; 
+    } 
+    pCrawl->isEndOfWord = true;
+    pCrawl->number= num;
+} 
+
+bool search(struct ThreeNode *root, string key) 
+{ 
+    struct ThreeNode *pCrawl = root; 
+  
+    for (int i = 0; i < key.length(); i++) 
+    { 
+        int index = key[i] - 'a'; 
+        if (!pCrawl->children[index]) 
+            return false; 
+  
+        pCrawl = pCrawl->children[index]; 
+    } 
+  
+    if(pCrawl != NULL && pCrawl->isEndOfWord){
+        cout<<"\nOUTPUT: YES,"<<pCrawl->number<<"\n";
+        return true;
+    } 
+
+} 
+  
+void insert_data(struct ThreeNode *root){
+    fstream fin; 
+  
+    fin.open("EnglishDictionary.csv", ios::in);   
+    vector<string> row; 
+    string line, word, temp; 
+    int num;
+  
+    while (fin >> temp) { 
+  
+        row.clear(); 
+        getline(fin, line); 
+   
+        stringstream s(line); 
+
+        while (getline(s, word,', ')) {  
+            row.push_back(word); 
+        }  
+        num= stoi(row[1]);
+        insert(root,row[0],num);
+    }
+}
+
+int main() 
+{
+    string key;  
+    struct ThreeeNode *root = getNode(); 
+    
+    insert_data(root);
+
+    cout<<"INPUT : ";
+    cin>>key;
+    if(!search(root,key))
+        cout<<"\nOUTPUT: NO";
+    return 0; 
+}
