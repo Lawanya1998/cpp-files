@@ -1,0 +1,111 @@
+#include <bits/stdc++.h> 
+#include<fstream>
+#include<vector>
+#include<string.h>
+#include<sstream>
+
+using namespace std; 
+
+const int ALPHABET_SIZE = 26; 
+int NUM=0;
+struct TrieNode 
+{ 
+    struct TrieNode *children[ALPHABET_SIZE]; 
+
+    bool isEndOfWord;
+    int number; 
+}; 
+
+struct TrieNode *getNode(void) 
+{ 
+    struct TrieNode *pNode =  new TrieNode; 
+
+    pNode->isEndOfWord = false;
+    pNode->number=0; 
+
+    for (int i = 0; i < ALPHABET_SIZE; i++) 
+        pNode->children[i] = NULL; 
+
+    return pNode; 
+} 
+
+void display(struct TrieNode* root, char str[], int level) 
+{ 
+    if (isLeafNode(root))  
+    { 
+        str[level] = '\0'; 
+        cout << str << endl; 
+    } 
+    int i; 
+    for (i = 0; i < ALPHABET_SIZE; i++)  
+    { 
+        if (root->children[i])  
+        { 
+            str[level] = i + 'a'; 
+            display(root->children[i], str, level + 1); 
+        } 
+    } 
+} 
+
+void insert(struct TrieNode *root, string key) 
+{ 
+    struct TrieNode *pCrawl = root; 
+
+    for (int i = 0; i < key.length(); i++) 
+    { 
+        int index = key[i] - 'a'; 
+        if (!pCrawl->children[index]) 
+            pCrawl->children[index] = getNode(); 
+
+        pCrawl = pCrawl->children[index];
+    } 
+    pCrawl->isEndOfWord = true;
+    pCrawl->number= ++NUM;
+} 
+
+bool search(struct TrieNode *root, int key){
+
+    struct TrieNode *pCrawl = root; 
+    char str[50];
+    for (int i = 0; i < ALPHABET_SIZE; i++){
+        if(pCrawl->number==key){
+            display(root,str,0);
+        }
+    }
+} 
+
+void insert_data(struct TrieNode *root){
+    fstream fin; 
+
+    fin.open("EnglishDictionary.csv", ios::in);   
+    vector<string> row; 
+    string line, word, temp; 
+    int num;
+
+    while (fin >> temp) { 
+
+        row.clear(); 
+        getline(fin, line); 
+
+        stringstream s(line); 
+
+        while (getline(s, word,', ')) {  
+            row.push_back(word); 
+        }  
+        insert(root,row[0]);
+    }
+}
+
+int main() 
+{
+    int key;  
+    struct TrieNode *root = getNode(); 
+
+    insert_data(root);
+
+    cout<<"INPUT : ";
+    cin>>key;
+    if(!search(root,key))
+        cout<<"\nOUTPUT: NO";
+    return 0; 
+}
